@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaninis's Halloween Candy Run</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="ui">
+        <div id="instructions">
+            <span style="font-size:40px">Click to play</span>
+            <br />
+            (W, A, S, D = Move, MOUSE = Look around)
+        </div>
+        <div id="score">
+            Candies: <span id="candy-count">0</span><br>
+            Carrots: <span id="carrot-count">0</span>
+        </div>
+        <div id="crosshair">+</div>
+        <div id="basket"></div>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

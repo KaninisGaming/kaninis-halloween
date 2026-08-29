@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#instructions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ff8800;
+    text-align: center;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #ff8800;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #000;
+}
+
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    opacity: 0.5;
+}
+
+#basket {
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    width: 200px;
+    height: 150px;
+    background-color: #8B4513; /* SaddleBrown */
+    border-radius: 20px 20px 100px 100px;
+    border: 5px solid #5C3A21;
+    box-shadow: inset 0 -20px 20px rgba(0,0,0,0.5);
+}
+#basket::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50px;
+    width: 100px;
+    height: 60px;
+    border: 10px solid #8B4513;
+    border-radius: 50px 50px 0 0;
+    border-bottom: none;
+}
