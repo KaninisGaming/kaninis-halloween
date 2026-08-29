@@ -1,7 +1,12 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { VignetteShader } from 'three/addons/shaders/VignetteShader.js';
 
-let camera, scene, renderer, controls;
+let camera, scene, renderer, controls, composer;
 let objects = [];
 let collectibles = []; // Store candies and carrots
 let ghosts = []; // Store ghosts for animation
@@ -30,6 +35,107 @@ let prevTime = performance.now();
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 
+
+
+
+
+// Global uniforms for custom fog
+const fogUniforms = {
+    fogColor: { value: new THREE.Color(0x1a1a2e) },
+    fogNear: { value: 5.0 },
+    fogFar: { value: 60.0 },
+    fogDensity: { value: 0.15 },
+    time: { value: 0.0 }
+};
+
+// Shader chunks for fog
+const customFogParsVertex = `
+    varying vec3 vCustomWorldPosition;
+`;
+const customFogVertex = `
+    vCustomWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+`;
+const customFogParsFragment = `
+    uniform vec3 fogColor;
+    uniform float fogNear;
+    uniform float fogFar;
+    uniform float fogDensity;
+    uniform float time;
+    varying vec3 vCustomWorldPosition;
+
+    // Simplex noise function
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+    float snoise(vec2 v) {
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy) );
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod289(i);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m ;
+      m = m*m ;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+`;
+const customFogFragment = `
+    // Distance fog
+    float depth = gl_FragCoord.z / gl_FragCoord.w;
+    float fogFactor = smoothstep(fogNear, fogFar, depth);
+
+    // Height and noise fog
+    float heightFactor = smoothstep(10.0, -2.0, vCustomWorldPosition.y);
+    float noiseValue = snoise(vCustomWorldPosition.xz * 0.05 + time * 0.2) * 0.5 + 0.5;
+
+    float finalFogFactor = fogFactor * heightFactor * (0.5 + noiseValue * 0.5);
+    finalFogFactor = clamp(finalFogFactor, 0.0, 1.0);
+
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, finalFogFactor);
+`;
+
+function applyCustomFog(material) {
+    material.onBeforeCompile = function (shader) {
+        shader.uniforms.fogColor = fogUniforms.fogColor;
+        shader.uniforms.fogNear = fogUniforms.fogNear;
+        shader.uniforms.fogFar = fogUniforms.fogFar;
+        shader.uniforms.fogDensity = fogUniforms.fogDensity;
+        shader.uniforms.time = fogUniforms.time;
+
+        shader.vertexShader = shader.vertexShader.replace(
+            '#include <common>',
+            '#include <common>\n' + customFogParsVertex
+        );
+        shader.vertexShader = shader.vertexShader.replace(
+            '#include <begin_vertex>',
+            '#include <begin_vertex>\n' + customFogVertex
+        );
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <common>',
+            '#include <common>\n' + customFogParsFragment
+        );
+
+        // Inject fog logic at the very end of the fragment shader
+        shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <dithering_fragment>',
+            '#include <dithering_fragment>\n' + customFogFragment
+        );
+    };
+}
+
 init();
 animate();
 
@@ -56,21 +162,34 @@ function init() {
     // 3. Renderer Setup
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    if (composer) {
+        composer.setSize(window.innerWidth, window.innerHeight);
+    }
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
     document.body.appendChild(renderer.domElement);
 
     // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+    const ambientLight = new THREE.AmbientLight(0x555566); // Even brighter ambient light
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x5555aa, 1.5); // Moonlight
-    dirLight.position.set(10, 20, 10);
+    const dirLight = new THREE.DirectionalLight(0xaabbdd, 2.5); // Even Brighter Moonlight
+    dirLight.position.set(50, 60, -100);
     dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 300;
+    dirLight.shadow.camera.left = -100;
+    dirLight.shadow.camera.right = 100;
+    dirLight.shadow.camera.top = 100;
+    dirLight.shadow.camera.bottom = -100;
     scene.add(dirLight);
 
     // 5. Environment (Ground)
     const groundGeometry = new THREE.PlaneGeometry(200, 200);
-    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x2b3a2a }); // Dark muddy green
+    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x2b3a2a });
+    applyCustomFog(groundMaterial);
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
@@ -89,8 +208,30 @@ function init() {
     // 8. Create Collectibles
     createCollectibles();
 
+    // 9. Post-Processing Setup
+    setupPostProcessing();
+
     // Handle Window Resize
     window.addEventListener('resize', onWindowResize);
+}
+
+
+function setupPostProcessing() {
+    composer = new EffectComposer(renderer);
+
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass.threshold = 0.2;
+    bloomPass.strength = 0.5; // Glow intensity
+    bloomPass.radius = 0.5;
+    composer.addPass(bloomPass);
+
+    const vignettePass = new ShaderPass(VignetteShader);
+    vignettePass.uniforms['offset'].value = 1.0;
+    vignettePass.uniforms['darkness'].value = 0.5; // Spooky dark edges
+    composer.addPass(vignettePass);
 }
 
 function setInputMode(mode) {
@@ -351,6 +492,7 @@ function createCollectibles() {
     const carrotGeo = new THREE.ConeGeometry(0.2, 1, 8);
     carrotGeo.translate(0, 0.5, 0); // shift pivot to bottom
     const carrotMat = new THREE.MeshLambertMaterial({ color: 0xff8800 });
+    applyCustomFog(carrotMat);
 
     // Candy Geometry (Small wrapped candy - simple cylinder or sphere for now)
     const candyGeo = new THREE.SphereGeometry(0.3, 8, 8);
@@ -376,6 +518,7 @@ function createCollectibles() {
         const candyMat = new THREE.MeshLambertMaterial({
             color: candyColors[Math.floor(Math.random() * candyColors.length)]
         });
+        applyCustomFog(candyMat);
         const candy = new THREE.Mesh(candyGeo, candyMat);
         candy.position.x = (Math.random() - 0.5) * 180;
         candy.position.y = 0.3; // Slightly above ground
@@ -400,9 +543,11 @@ function createGhosts() {
         transparent: true,
         opacity: 0.6
     });
+    applyCustomFog(ghostMat);
 
     const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
     const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    applyCustomFog(eyeMat);
 
     for (let i = 0; i < 15; i++) {
         const ghost = new THREE.Group();
@@ -439,8 +584,10 @@ function createPumpkins() {
     pumpkinGeo.scale(1, 0.8, 1);
 
     const pumpkinMat = new THREE.MeshLambertMaterial({ color: 0xff7700 });
+    applyCustomFog(pumpkinMat);
     const stemGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 8);
     const stemMat = new THREE.MeshLambertMaterial({ color: 0x228b22 });
+    applyCustomFog(stemMat);
 
     for (let i = 0; i < 20; i++) {
         const pumpkin = new THREE.Group();
@@ -477,10 +624,13 @@ function createScenery() {
     const treeGeo = new THREE.ConeGeometry(2, 8, 8);
     const trunkGeo = new THREE.CylinderGeometry(0.5, 0.5, 2, 8);
     const treeMat = new THREE.MeshLambertMaterial({ color: 0x112211 });
+    applyCustomFog(treeMat);
     const trunkMat = new THREE.MeshLambertMaterial({ color: 0x332211 });
+    applyCustomFog(trunkMat);
 
     const graveGeo = new THREE.BoxGeometry(1.5, 2, 0.5);
     const graveMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+    applyCustomFog(graveMat);
 
     for (let i = 0; i < 50; i++) {
         // Create Trees
@@ -538,6 +688,10 @@ function animate() {
     requestAnimationFrame(animate);
 
     const time = performance.now();
+
+    if (typeof fogUniforms !== 'undefined') {
+        fogUniforms.time.value = time * 0.001;
+    }
 
     if (isPlaying) {
         const delta = (time - prevTime) / 1000;
@@ -612,7 +766,11 @@ function animate() {
         }
     });
 
-    renderer.render(scene, camera);
+    if (composer) {
+        composer.render();
+    } else {
+        renderer.render(scene, camera);
+    }
 }
 
 function checkCollisions(playerPos) {
