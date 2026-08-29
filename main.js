@@ -4,6 +4,7 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 let camera, scene, renderer, controls;
 let objects = [];
 let collectibles = []; // Store candies and carrots
+let ghosts = []; // Store ghosts for animation
 let candyScore = 0;
 let carrotScore = 0;
 
@@ -77,6 +78,9 @@ function init() {
 
     // 6. Spooky Trees and Gravestones
     createScenery();
+    createMoon();
+    createPumpkins();
+    createGhosts();
 
     // 7. Controls Setup
     setupControls();
@@ -384,6 +388,91 @@ function createCollectibles() {
     }
 }
 
+function createGhosts() {
+    const ghostGeo = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 16);
+    // Make the top rounded
+    const topGeo = new THREE.SphereGeometry(0.5, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+    topGeo.translate(0, 0.75, 0);
+
+    // Merge geometries manually for a simple ghost shape
+    const ghostMat = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.6
+    });
+
+    const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+    for (let i = 0; i < 15; i++) {
+        const ghost = new THREE.Group();
+
+        const body = new THREE.Mesh(ghostGeo, ghostMat);
+        const head = new THREE.Mesh(topGeo, ghostMat);
+
+        const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+        leftEye.position.set(-0.2, 0.9, 0.4);
+
+        const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+        rightEye.position.set(0.2, 0.9, 0.4);
+
+        ghost.add(body);
+        ghost.add(head);
+        ghost.add(leftEye);
+        ghost.add(rightEye);
+
+        ghost.position.x = (Math.random() - 0.5) * 150;
+        ghost.position.y = 2 + Math.random() * 2; // Float above ground
+        ghost.position.z = (Math.random() - 0.5) * 150;
+
+        // Store original Y for bobbing animation
+        ghost.userData = { originalY: ghost.position.y, bobSpeed: 0.002 + Math.random() * 0.002, bobOffset: Math.random() * Math.PI * 2 };
+
+        scene.add(ghost);
+        ghosts.push(ghost);
+    }
+}
+
+function createPumpkins() {
+    const pumpkinGeo = new THREE.SphereGeometry(0.8, 16, 16);
+    // Flatten pumpkin slightly
+    pumpkinGeo.scale(1, 0.8, 1);
+
+    const pumpkinMat = new THREE.MeshLambertMaterial({ color: 0xff7700 });
+    const stemGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 8);
+    const stemMat = new THREE.MeshLambertMaterial({ color: 0x228b22 });
+
+    for (let i = 0; i < 20; i++) {
+        const pumpkin = new THREE.Group();
+
+        const body = new THREE.Mesh(pumpkinGeo, pumpkinMat);
+        body.castShadow = true;
+
+        const stem = new THREE.Mesh(stemGeo, stemMat);
+        stem.position.y = 0.7;
+
+        pumpkin.add(body);
+        pumpkin.add(stem);
+
+        pumpkin.position.x = (Math.random() - 0.5) * 150;
+        pumpkin.position.y = 0.6; // Rest on ground
+        pumpkin.position.z = (Math.random() - 0.5) * 150;
+
+        pumpkin.rotation.y = Math.random() * Math.PI;
+
+        scene.add(pumpkin);
+        objects.push(pumpkin);
+    }
+}
+
+function createMoon() {
+    const moonGeo = new THREE.SphereGeometry(15, 32, 32);
+    const moonMat = new THREE.MeshBasicMaterial({ color: 0xffffee }); // Slightly warm white
+    const moon = new THREE.Mesh(moonGeo, moonMat);
+    moon.position.set(50, 60, -100);
+    scene.add(moon);
+}
+
 function createScenery() {
     const treeGeo = new THREE.ConeGeometry(2, 8, 8);
     const trunkGeo = new THREE.CylinderGeometry(0.5, 0.5, 2, 8);
@@ -499,6 +588,27 @@ function animate() {
         if (item.userData.type === 'candy') {
             item.rotation.y += 0.02;
             item.position.y = 0.3 + Math.sin(time * 0.003 + item.position.x) * 0.2;
+        }
+    });
+
+    // Animate ghosts
+    const playerPos = controls.getObject().position;
+    ghosts.forEach(ghost => {
+        // Bobbing animation
+        ghost.position.y = ghost.userData.originalY + Math.sin(time * ghost.userData.bobSpeed + ghost.userData.bobOffset) * 0.5;
+
+        // Turn to look at player
+        ghost.lookAt(playerPos.x, ghost.position.y, playerPos.z);
+
+        // Slowly move towards player if close
+        const dx = playerPos.x - ghost.position.x;
+        const dz = playerPos.z - ghost.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+
+        if (distance < 20 && distance > 2) { // Don't get too close
+            const moveSpeed = 0.02; // adjust ghost speed here
+            ghost.position.x += (dx / distance) * moveSpeed;
+            ghost.position.z += (dz / distance) * moveSpeed;
         }
     });
 
