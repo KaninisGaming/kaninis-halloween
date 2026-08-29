@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaninis's Halloween Candy Run</title>
     <link rel="stylesheet" href="style.css">
     <script type="importmap">
@@ -16,17 +16,46 @@
 </head>
 <body>
     <div id="ui">
-        <div id="instructions">
-            <span style="font-size:40px">Click to play</span>
-            <br />
-            (W, A, S, D = Move, MOUSE = Look around)
-        </div>
         <div id="score">
             Candies: <span id="candy-count">0</span><br>
             Carrots: <span id="carrot-count">0</span>
         </div>
         <div id="crosshair">+</div>
         <div id="basket"></div>
+
+        <div id="main-menu" class="menu-screen">
+            <div class="menu-content">
+                <h1>Halloween Candy Run</h1>
+                <button id="btn-play">Play</button>
+                <button id="btn-settings">Settings</button>
+            </div>
+        </div>
+
+        <div id="settings-menu" class="menu-screen" style="display: none;">
+            <div class="menu-content">
+                <h2>Settings</h2>
+                <div class="setting-item">
+                    <label>Input Mode:</label>
+                    <select id="input-mode">
+                        <option value="auto">Auto</option>
+                        <option value="keyboard">Keyboard & Mouse</option>
+                        <option value="touch">Touch Screen</option>
+                    </select>
+                </div>
+                <button id="btn-back">Back</button>
+            </div>
+        </div>
+
+        <!-- Touch UI -->
+        <div id="touch-ui" style="display: none;">
+            <button id="btn-pause">|| Pause</button>
+            <div id="joystick-zone">
+                <div id="joystick-base" style="display: none;">
+                    <div id="joystick-stick"></div>
+                </div>
+            </div>
+            <div id="look-zone"></div>
+        </div>
     </div>
     <script type="module" src="main.js"></script>
 </body>

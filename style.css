@@ -3,6 +3,7 @@ body {
     overflow: hidden;
     background-color: #000;
     font-family: 'Courier New', Courier, monospace;
+    touch-action: none; /* Prevent browser handling of touches (like scroll) */
 }
 
 #ui {
@@ -14,7 +15,7 @@ body {
     pointer-events: none;
 }
 
-#instructions {
+.menu-screen {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -24,9 +25,44 @@ body {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.7);
     color: #ff8800;
-    text-align: center;
     pointer-events: auto;
+    z-index: 10;
+}
+
+.menu-content {
+    background: rgba(30, 30, 30, 0.9);
+    padding: 40px;
+    border-radius: 10px;
+    border: 2px solid #ff8800;
+    text-align: center;
+    box-shadow: 0 0 20px #ff8800;
+}
+
+.menu-content h1, .menu-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.menu-content button, .menu-content select {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 18px;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #333;
+    color: #ff8800;
+    border: 1px solid #ff8800;
     cursor: pointer;
+    border-radius: 5px;
+}
+
+.menu-content button:hover, .menu-content select:hover {
+    background-color: #444;
+}
+
+.setting-item {
+    margin-bottom: 20px;
 }
 
 #score {
@@ -70,4 +106,69 @@ body {
     border: 10px solid #8B4513;
     border-radius: 50px 50px 0 0;
     border-bottom: none;
+}
+
+/* Touch UI */
+#touch-ui {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#joystick-zone {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+#look-zone {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+#joystick-base {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+#joystick-stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+#btn-pause {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    font-size: 18px;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: rgba(50, 50, 50, 0.7);
+    color: #ff8800;
+    border: 1px solid #ff8800;
+    cursor: pointer;
+    border-radius: 5px;
+    pointer-events: auto;
+    z-index: 5;
 }
