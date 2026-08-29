@@ -193,10 +193,10 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0x222233); // Dimmer, more blue ambient light
+    const ambientLight = new THREE.AmbientLight(0x444455); // Dimmer, more blue ambient light
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x7788aa, 1.2); // Silver/blue Moonlight
+    const dirLight = new THREE.DirectionalLight(0x7788aa, 2.0); // Silver/blue Moonlight
     dirLight.position.set(50, 60, -100);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
