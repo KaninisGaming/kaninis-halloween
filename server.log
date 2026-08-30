@@ -1,28 +1,42 @@
-127.0.0.1 - - [29/Aug/2026 22:28:14] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:14] "GET /main.js HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:14] "GET /style.css HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/ground.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/leaves.png HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/bark.jpg HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/grave.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/pumpkin.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:16] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:16] "GET /textures/moon.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /style.css HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /main.js HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/moon.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/ground.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/pumpkin.jpg HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/bark.jpg HTTP/1.1" 200 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/leaves.png HTTP/1.1" 404 -
-127.0.0.1 - - [29/Aug/2026 22:28:44] code 404, message File not found
-127.0.0.1 - - [29/Aug/2026 22:28:44] "GET /textures/grave.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:40:48] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:40:48] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:40:48] "GET /main.js HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/ground.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/leaves.png HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/bark.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/grave.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/moon.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:40:50] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:40:50] "GET /textures/pumpkin.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /main.js HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/ground.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/leaves.png HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/pumpkin.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/bark.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/grave.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:32] "GET /textures/moon.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /main.js HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/ground.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/leaves.png HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/grave.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/bark.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/pumpkin.jpg HTTP/1.1" 404 -
+127.0.0.1 - - [30/Aug/2026 16:41:57] code 404, message File not found
+127.0.0.1 - - [30/Aug/2026 16:41:57] "GET /textures/moon.jpg HTTP/1.1" 404 -

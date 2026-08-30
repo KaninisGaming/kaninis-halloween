@@ -1,0 +1,17 @@
+--- index.html
++++ index.html
+@@ -43,6 +43,14 @@
+                     <label>Enable Fog:</label>
+                     <input type="checkbox" id="fog-toggle">
+                 </div>
++                <div class="setting-item">
++                    <label>Ambient Light:</label>
++                    <input type="range" id="ambient-light-slider" min="0" max="5" step="0.1" value="1.0">
++                </div>
++                <div class="setting-item">
++                    <label>Moon Light:</label>
++                    <input type="range" id="moon-light-slider" min="0" max="10" step="0.1" value="2.0">
++                </div>
+                 <button id="btn-back">Back</button>
+             </div>
+         </div>
