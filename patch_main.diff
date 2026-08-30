@@ -1,0 +1,34 @@
+--- main.js
++++ main.js
+@@ -300,6 +300,31 @@
+         fogUniforms.fogEnabled.value = isFog ? 1.0 : 0.0;
+     });
+
++    const ambientLightSlider = document.getElementById('ambient-light-slider');
++    const moonLightSlider = document.getElementById('moon-light-slider');
++
++    const savedAmbientLight = localStorage.getItem('candyRunAmbientLight');
++    if (savedAmbientLight !== null) {
++        ambientLightSlider.value = savedAmbientLight;
++        ambientLight.intensity = parseFloat(savedAmbientLight);
++    }
++
++    const savedMoonLight = localStorage.getItem('candyRunMoonLight');
++    if (savedMoonLight !== null) {
++        moonLightSlider.value = savedMoonLight;
++        dirLight.intensity = parseFloat(savedMoonLight);
++    }
++
++    ambientLightSlider.addEventListener('input', (e) => {
++        ambientLight.intensity = parseFloat(e.target.value);
++        localStorage.setItem('candyRunAmbientLight', e.target.value);
++    });
++
++    moonLightSlider.addEventListener('input', (e) => {
++        dirLight.intensity = parseFloat(e.target.value);
++        localStorage.setItem('candyRunMoonLight', e.target.value);
++    });
++
+     btnPlay.addEventListener('click', () => {
+         mainMenu.style.display = 'none';
+         isPlaying = true;

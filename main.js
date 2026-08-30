@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { VignetteShader } from 'three/addons/shaders/VignetteShader.js';
 
-let camera, scene, renderer, controls, composer;
+let camera, scene, renderer, controls, composer, ambientLight, dirLight;
 let objects = [];
 let collectibles = []; // Store candies and carrots
 let ghosts = []; // Store ghosts for animation
@@ -196,10 +196,10 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0x444455); // Dimmer, more blue ambient light
+    ambientLight = new THREE.AmbientLight(0x444455); // Dimmer, more blue ambient light
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x7788aa, 2.0); // Silver/blue Moonlight
+    dirLight = new THREE.DirectionalLight(0x7788aa, 2.0); // Silver/blue Moonlight
     dirLight.position.set(50, 60, -100);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
@@ -298,6 +298,31 @@ function setupMenu() {
         const isFog = e.target.checked;
         localStorage.setItem('candyRunFogEnabled', isFog);
         fogUniforms.fogEnabled.value = isFog ? 1.0 : 0.0;
+    });
+
+    const ambientLightSlider = document.getElementById('ambient-light-slider');
+    const moonLightSlider = document.getElementById('moon-light-slider');
+
+    const savedAmbientLight = localStorage.getItem('candyRunAmbientLight');
+    if (savedAmbientLight !== null) {
+        ambientLightSlider.value = savedAmbientLight;
+        ambientLight.intensity = parseFloat(savedAmbientLight);
+    }
+
+    const savedMoonLight = localStorage.getItem('candyRunMoonLight');
+    if (savedMoonLight !== null) {
+        moonLightSlider.value = savedMoonLight;
+        dirLight.intensity = parseFloat(savedMoonLight);
+    }
+
+    ambientLightSlider.addEventListener('input', (e) => {
+        ambientLight.intensity = parseFloat(e.target.value);
+        localStorage.setItem('candyRunAmbientLight', e.target.value);
+    });
+
+    moonLightSlider.addEventListener('input', (e) => {
+        dirLight.intensity = parseFloat(e.target.value);
+        localStorage.setItem('candyRunMoonLight', e.target.value);
     });
 
     btnPlay.addEventListener('click', () => {
