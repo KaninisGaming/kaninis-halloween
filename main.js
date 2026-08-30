@@ -50,6 +50,7 @@ function loadTextureWithFallback(url, color) {
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             material.map = texture;
+            material.color.setHex(0xffffff);
             material.needsUpdate = true;
         },
         // onProgress callback currently not supported
@@ -196,10 +197,10 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // 4. Lighting
-    ambientLight = new THREE.AmbientLight(0x444455); // Dimmer, more blue ambient light
+    ambientLight = new THREE.AmbientLight(0xffffff); // Dimmer, more blue ambient light
     scene.add(ambientLight);
 
-    dirLight = new THREE.DirectionalLight(0x7788aa, 2.0); // Silver/blue Moonlight
+    dirLight = new THREE.DirectionalLight(0xffffff, 2.0); // Silver/blue Moonlight
     dirLight.position.set(50, 60, -100);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
