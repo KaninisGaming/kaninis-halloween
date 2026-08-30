@@ -68,7 +68,8 @@ const fogUniforms = {
     fogNear: { value: 5.0 },
     fogFar: { value: 60.0 },
     fogDensity: { value: 0.15 },
-    time: { value: 0.0 }
+    time: { value: 0.0 },
+    fogEnabled: { value: 1.0 }
 };
 
 // Shader chunks for fog
@@ -84,6 +85,7 @@ const customFogParsFragment = `
     uniform float fogFar;
     uniform float fogDensity;
     uniform float time;
+    uniform float fogEnabled;
     varying vec3 vCustomWorldPosition;
 
     // Simplex noise function
@@ -116,7 +118,7 @@ const customFogParsFragment = `
 `;
 const customFogFragment = `
     // Distance fog
-    float depth = gl_FragCoord.z / gl_FragCoord.w;
+    float depth = length(vCustomWorldPosition - cameraPosition);
     float fogFactor = smoothstep(fogNear, fogFar, depth);
 
     // Height and noise fog
@@ -126,7 +128,7 @@ const customFogFragment = `
     float finalFogFactor = fogFactor * heightFactor * (0.5 + noiseValue * 0.5);
     finalFogFactor = clamp(finalFogFactor, 0.0, 1.0);
 
-    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, finalFogFactor);
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, finalFogFactor * fogEnabled);
 `;
 
 function applyCustomFog(material) {
@@ -136,6 +138,7 @@ function applyCustomFog(material) {
         shader.uniforms.fogFar = fogUniforms.fogFar;
         shader.uniforms.fogDensity = fogUniforms.fogDensity;
         shader.uniforms.time = fogUniforms.time;
+        shader.uniforms.fogEnabled = fogUniforms.fogEnabled;
 
         shader.vertexShader = shader.vertexShader.replace(
             '#include <common>',
@@ -277,6 +280,25 @@ function setupMenu() {
     const inputModeSelect = document.getElementById('input-mode');
     const touchUI = document.getElementById('touch-ui');
     const btnPause = document.getElementById('btn-pause');
+
+
+    const fogToggle = document.getElementById('fog-toggle');
+    const savedFog = localStorage.getItem('candyRunFogEnabled');
+
+    if (savedFog !== null) {
+        const isFog = savedFog === 'true';
+        fogToggle.checked = isFog;
+        fogUniforms.fogEnabled.value = isFog ? 1.0 : 0.0;
+    } else {
+        fogToggle.checked = true;
+        fogUniforms.fogEnabled.value = 1.0;
+    }
+
+    fogToggle.addEventListener('change', (e) => {
+        const isFog = e.target.checked;
+        localStorage.setItem('candyRunFogEnabled', isFog);
+        fogUniforms.fogEnabled.value = isFog ? 1.0 : 0.0;
+    });
 
     btnPlay.addEventListener('click', () => {
         mainMenu.style.display = 'none';
