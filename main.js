@@ -120,7 +120,7 @@ const customFogFragment = `
     float fogFactor = smoothstep(fogNear, fogFar, depth);
 
     // Height and noise fog
-    float heightFactor = smoothstep(10.0, -2.0, vCustomWorldPosition.y);
+    float heightFactor = 1.0 - smoothstep(-2.0, 10.0, vCustomWorldPosition.y);
     float noiseValue = snoise(vCustomWorldPosition.xz * 0.05 + time * 0.2) * 0.5 + 0.5;
 
     float finalFogFactor = fogFactor * heightFactor * (0.5 + noiseValue * 0.5);
