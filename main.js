@@ -197,7 +197,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     // 4. Lighting
-    ambientLight = new THREE.AmbientLight(0xffffff); // Dimmer, more blue ambient light
+    ambientLight = new THREE.AmbientLight(0xffffff, 4.0); // Dimmer, more blue ambient light
     scene.add(ambientLight);
 
     dirLight = new THREE.DirectionalLight(0xffffff, 2.0); // Silver/blue Moonlight
